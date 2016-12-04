@@ -1,0 +1,39 @@
+{
+  "logRequestBody": true,
+  "client_id": "gb_dev_app_client_id",
+  "client_secret": "gb_dev_app_client_secret",
+  "connections": {
+    "services": {
+      "endpoints": {
+        "default": {
+          "proxy": "localhost:9090"
+        }
+      }
+    }
+  },
+  "meddleware": {
+    "construx": {
+      "enabled": true,
+      "priority": 35,
+      "module": {
+        "name": "construx",
+        "arguments": [
+          "path:./browser",
+          "path:./.build",
+          {
+            "webpack": {
+              "module": "construx-webpack",
+              "config": {
+                "webpack": "path:./webpack.config",
+                "bundler": {
+                  "noInfo": false
+                }
+              },
+              "files": "/js/app.js"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

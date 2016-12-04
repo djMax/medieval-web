@@ -1,0 +1,93 @@
+* {
+    -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
+}
+
+body {
+    -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
+    -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
+    -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
+    background-color:#E4E4E4;
+    background-image:linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
+    background-image:-webkit-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
+    background-image:-ms-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
+    background-image:-webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        color-stop(0, #A7A7A7),
+        color-stop(0.51, #E4E4E4)
+    );
+    background-attachment:fixed;
+    height:100%;
+    margin:0px;
+    padding:0px;
+    width:100%;
+}
+
+#speakButton {
+    color: #414552;
+}
+
+.mycircle1 {
+     border: 1px solid #414552;
+     width: 164px;
+     height: 164px;
+     border-radius: 50%;
+     position: absolute;
+ }
+ .mycircle2 {
+     border: 1px solid #80838b;
+     width: 136px;
+     height: 136px;
+     border-radius: 50%;
+     position: absolute;
+     margin-top: 13px;
+     margin-left: 13px;
+ }
+ .mycircle3 {
+     border: 1px solid #d5d6d8;
+     width: 108px;
+     height: 108px;
+     border-radius: 50%;
+     position: absolute;
+     margin-top: 13px;
+     margin-left: 13px;
+ }
+  .mycircle4 {
+     border: 1px solid #414552;
+     width: 90px;
+     height: 90px;
+     border-radius: 50%;
+     position: absolute;
+     margin-top: 36px;
+     margin-left: 35px;
+ }
+
+ #speechResult {
+     font-family: 'Almendra', serif;
+     color: #666666;
+     opacity: 85%;
+     font-size: 1.5em;
+     font-weight: bold;
+ }
+
+ #characters>div>img {
+    object-fit: fill;
+    object-position: 50% 50%;
+ }
+
+ #characters>div>div {
+    font-family: 'Almendra', serif;
+ }
+
+ #characters {
+     position: absolute;
+     bottom: 90px;
+     top: 40px;
+     width: 100%;
+     text-align: center;
+ }
+
+ #characters>div.pics {
+     height: 100%;
+ }

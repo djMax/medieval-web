@@ -1,0 +1,47 @@
+{
+  "name": "medieval-web",
+  "version": "1.0.0",
+  "description": "A voice driven interface for exploring Medieval times",
+  "private": true,
+  "main": "build/index.js",
+  "files": [
+    "build/"
+  ],
+  "scripts": {
+    "build": "babel src/ -Dd build/",
+    "prepublish": "npm run build",
+    "lint": "eslint .",
+    "start": "node build/server.js",
+    "start-dev": "node -r babel-regsiter src/server.js",
+    "start-watch": "nodemon --exec node -r babel-register src/server.js",
+    "webpack": "webpack"
+  },
+  "keywords": [],
+  "author": "Beatrix and Max",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@gasbuddy/service": "^0.1.0",
+    "bluebird": "^3.4.6",
+    "bootstrap": "^3.3.7",
+    "compression": "^1.6.2",
+    "jquery": "^3.1.1",
+    "ladda": "^1.0.0",
+    "serve-static": "^1.11.1",
+    "spin.js": "^2.3.2",
+    "uuid": "^3.0.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-core": "^6.18.2",
+    "babel-loader": "^6.2.8",
+    "babel-preset-gasbuddy": "^1",
+    "babel-register": "^6.18.0",
+    "construx": "^1.0.1",
+    "construx-webpack": "0.0.1",
+    "eslint": "^3.10.2",
+    "eslint-config-gasbuddy": "^1",
+    "nock": "^9.0.0",
+    "nodemon": "^1.11.0",
+    "webpack": "^1.13.3"
+  }
+}

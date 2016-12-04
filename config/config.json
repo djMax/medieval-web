@@ -1,0 +1,30 @@
+{
+  "port": 8888,
+  "meddleware": {
+    "compress": {
+      "enabled": false,
+      "priority": 10,
+      "module": "compression"
+    },
+    "static-built": {
+      "enabled": true,
+      "priority": 60,
+      "module": {
+        "name": "serve-static",
+        "arguments": [
+          "path:./.build"
+        ]
+      }
+    },
+    "static-public": {
+      "enabled": true,
+      "priority": 61,
+      "module": {
+        "name": "serve-static",
+        "arguments": [
+          "path:./browser/static"
+        ]
+      }
+    }
+  }
+}
