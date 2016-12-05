@@ -97,7 +97,9 @@ export async function processSpeech(apiai, voiceSetup, listenAgain) {
 
     if (responses[currentCharacter]) {
       const response = responses[currentCharacter][apiai.result.action];
-      solo(currentCharacter);
+      if (apiai.result.action !== 'marriage') {
+        solo(currentCharacter);
+      }
       await readSentences(response, voiceSetup[currentCharacter], speeds[currentCharacter]);
       clear();
       return;
