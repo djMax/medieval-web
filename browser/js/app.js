@@ -1,6 +1,5 @@
-import request from 'superagent';
 import * as animate from './animate';
-import interpret from './apiai.js';
+import interpret from './apiai';
 import { recognizer, start } from './recognizer';
 import { processSpeech, setCharacter, solo } from './process';
 import { refresh } from './responses';
@@ -12,7 +11,7 @@ const voiceSetup = {
   brian: 'daniel',
 };
 
-speechSynthesis.onvoiceschanged = async function () {
+speechSynthesis.onvoiceschanged = async function voiceBinding() {
   const voices = speechSynthesis.getVoices();
 
   for (const [char, voiceName] of Object.entries(voiceSetup)) {
@@ -22,7 +21,7 @@ speechSynthesis.onvoiceschanged = async function () {
       }
     }
   }
-}
+};
 
 let recognizing = false;
 let finalTranscript;
@@ -40,13 +39,13 @@ recognizer.onend = async () => {
     const result = await interpret(finalTranscript);
     processSpeech(result, voiceSetup, start);
   }
-}
+};
 
 recognizer.onresult = (event) => {
   let isFinal;
   let interimTranscript = '';
   finalTranscript = '';
-  for (let i = event.resultIndex; i < event.results.length; ++i) {
+  for (let i = event.resultIndex; i < event.results.length; i += 1) {
     const transcript = event.results[i][0].transcript;
     if (event.results[i].isFinal) {
       isFinal = true;
@@ -63,7 +62,7 @@ recognizer.onresult = (event) => {
   if (isFinal) {
     recognizer.stop();
   }
-}
+};
 
 const autoQuestion = {
   food: 'what type of food do you like?',
@@ -74,7 +73,7 @@ const autoQuestion = {
   clothing: 'what type of clothes do you wear?',
   weapons: 'what weapons did they use?',
   torture: 'name some forms of torture.',
-}
+};
 
 $('#speechResult').on('click', 'a', async function clickQuestion(e) {
   e.preventDefault();
@@ -82,7 +81,7 @@ $('#speechResult').on('click', 'a', async function clickQuestion(e) {
 
   if (autoQuestion[link]) {
     const result = await interpret(autoQuestion[link]);
-    processSpeech(result, voiceSetup, start);
+    processSpeech(result, voiceSetup, () => {});
   }
 });
 
@@ -90,7 +89,7 @@ $('#characters>div>div.char').click(async function charClick(e) {
   e.preventDefault();
   for (const c of CHARACTERS) {
     if ($(this).hasClass(c)) {
-      setCharacter(c);
+      setCharacter(c, voiceSetup);
       solo(c);
       return;
     }
@@ -98,9 +97,9 @@ $('#characters>div>div.char').click(async function charClick(e) {
 });
 
 function ready() {
-  $('#speechResult').html('ask about <a href="#">food</a>, '+
+  $('#speechResult').html('ask about <a href="#">food</a>, ' +
   '<a href="#">marriage</a>, <a href="#">education</a>, ' +
-  '<a href="#">childhood</a>, <a href="#">clothing</a> '+
+  '<a href="#">childhood</a>, <a href="#">clothing</a> ' +
   'or <a href="#">religion</a>');
 }
 

@@ -1,4 +1,4 @@
-import interpret from './apiai.js';
+import interpret from './apiai';
 import { responses } from './responses';
 import { recognizer } from './recognizer';
 
@@ -23,8 +23,6 @@ function speak(text, voice, speed) {
     }
     if (speed) {
       u.rate = speed;
-    } else {
-      console.error('FAILED SPEED', text, voice);
     }
     u.onend = () => {
       if (!finished) {
@@ -45,19 +43,18 @@ function speak(text, voice, speed) {
 }
 
 async function readSentences(sentences, voice, speed) {
-  const sentenceArray = sentences.split(/[!\.]/);
+  const sentenceArray = sentences.replace(/[.]/g, '.\0').replace(/[!]/g, '!\0').split('\0');
   console.error('Reading', sentenceArray);
   for (const s of sentenceArray) {
-    if (s.length === 0) {
-      continue;
-    }
-    $('#speechResult').text(s);
-    for (let i = 0; i < 5; i++) {
-      try {
-        await speak(s, voice, speed);
-        break;
-      } catch (error) {
-        console.error('Speech failed', error);
+    if (s.length !== 0) {
+      $('#speechResult').text(s);
+      for (let i = 0; i < 5; i += 1) {
+        try {
+          await speak(s, voice, speed);
+          break;
+        } catch (error) {
+          console.error('Speech failed', error);
+        }
       }
     }
   }
@@ -76,16 +73,6 @@ function clear() {
   $('div.solo').hide();
   for (const c of ['isabella', 'brian', 'sierida']) {
     $(`div.${c}`).fadeIn();
-  }
-}
-
-export async function setCharacter(c) {
-  currentCharacter = c;
-  if (lastWasIncomplete) {
-    lastWasIncomplete = false;
-    recognizer.stop();
-    const result = await interpret(currentCharacter);
-    processSpeech(result, voiceSetup, listenAgain);
   }
 }
 
@@ -121,5 +108,15 @@ export async function processSpeech(apiai, voiceSetup, listenAgain) {
     await speak(apiai.result.fulfillment.speech);
   } else {
     console.log('Unknown result type', apiai);
+  }
+}
+
+export async function setCharacter(c, voiceSetup) {
+  currentCharacter = c;
+  if (lastWasIncomplete) {
+    lastWasIncomplete = false;
+    recognizer.stop();
+    const result = await interpret(currentCharacter);
+    processSpeech(result, voiceSetup, () => { });
   }
 }

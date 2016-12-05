@@ -1,3 +1,4 @@
+// eslint-disable-next-line new-cap
 export const recognizer = new webkitSpeechRecognition();
 recognizer.continuous = true;
 recognizer.interimResults = true;
