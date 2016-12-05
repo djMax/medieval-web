@@ -1,5 +1,6 @@
 import interpret from './apiai.js';
 import { responses } from './responses';
+import { recognizer } from './recognizer';
 
 let currentCharacter;
 let lastWasIncomplete = false;
@@ -82,6 +83,7 @@ export async function setCharacter(c) {
   currentCharacter = c;
   if (lastWasIncomplete) {
     lastWasIncomplete = false;
+    recognizer.stop();
     const result = await interpret(currentCharacter);
     processSpeech(result, voiceSetup, listenAgain);
   }

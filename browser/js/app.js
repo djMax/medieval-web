@@ -1,6 +1,7 @@
 import request from 'superagent';
 import * as animate from './animate';
 import interpret from './apiai.js';
+import { recognizer, start } from './recognizer';
 import { processSpeech, setCharacter, solo } from './process';
 import { refresh } from './responses';
 
@@ -26,24 +27,9 @@ speechSynthesis.onvoiceschanged = async function () {
 let recognizing = false;
 let finalTranscript;
 
-const recognizer = new webkitSpeechRecognition();
-recognizer.continuous = true;
-recognizer.interimResults = true;
-
-function start() {
-  console.log('start recognition');
-  recognizer.lang = 'en-US';
-  recognizing = true;
-  recognizer.start();
-}
-
 recognizer.onstart = () => {
-  console.log('ON START');
+  recognizing = true;
   animate.go();
-};
-
-recognizer.onerror = (event) => {
-  console.error('ON ERROR', event);
 };
 
 recognizer.onend = async () => {
