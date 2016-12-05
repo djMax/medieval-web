@@ -1,11 +1,10 @@
 import request from 'superagent';
 import * as animate from './animate';
-import processSpeech from './process';
-import uuid from 'uuid';
+import interpret from './apiai.js';
+import { processSpeech, setCharacter, solo } from './process';
+import { refresh } from './responses';
 
-// Isabella - Karen
-// Siereda - Victoria
-// Brian - Daniel
+const CHARACTERS = ['isabella', 'sierida', 'brian'];
 const voiceSetup = {
   isabella: 'karen',
   sierida: 'victoria',
@@ -22,11 +21,7 @@ speechSynthesis.onvoiceschanged = async function () {
       }
     }
   }
-  console.log(voiceSetup);
 }
-
-const token = 'd34008bf305c404bb394929e0e41aef7';
-const sessionId = uuid.v4();
 
 let recognizing = false;
 let finalTranscript;
@@ -56,16 +51,8 @@ recognizer.onend = async () => {
   animate.stop();
 
   if (finalTranscript) {
-    animate.goSpinner();
-    const { body: apiai } = await request
-      .get('https://api.api.ai/api/query?v=20150910&lang=en')
-      .query({
-        query: finalTranscript,
-        sessionId,
-      })
-      .set('Authorization', `Bearer ${token}`);
-    processSpeech(apiai, voiceSetup, start);
-    animate.stopSpinner();
+    const result = await interpret(finalTranscript);
+    processSpeech(result, voiceSetup, start);
   }
 }
 
@@ -77,7 +64,6 @@ recognizer.onresult = (event) => {
     const transcript = event.results[i][0].transcript;
     if (event.results[i].isFinal) {
       isFinal = true;
-      console.log('FINAL', transcript);
       finalTranscript = transcript;
     } else {
       interimTranscript += transcript;
@@ -93,11 +79,55 @@ recognizer.onresult = (event) => {
   }
 }
 
-$('#speakButton').click(() => {
-  if (recognizing) {
-    recognizing = false;
-    recognizer.stop();
-  } else {
-    start();
+const autoQuestion = {
+  food: 'what type of food do you like?',
+  marriage: 'were you married',
+  education: 'do you like school?',
+  childhood: 'what are children like?',
+  religion: 'what is your religion?',
+  clothing: 'what type of clothes do you wear?',
+  weapons: 'what weapons did they use?',
+  torture: 'name some forms of torture.',
+}
+
+$('#speechResult').on('click', 'a', async function clickQuestion(e) {
+  e.preventDefault();
+  const link = $(this).text();
+
+  if (autoQuestion[link]) {
+    const result = await interpret(autoQuestion[link]);
+    processSpeech(result, voiceSetup, start);
   }
+});
+
+$('#characters>div>div.char').click(async function charClick(e) {
+  e.preventDefault();
+  for (const c of CHARACTERS) {
+    if ($(this).hasClass(c)) {
+      setCharacter(c);
+      solo(c);
+      return;
+    }
+  }
+});
+
+function ready() {
+  $('#speechResult').html('ask about <a href="#">food</a>, '+
+  '<a href="#">marriage</a>, <a href="#">education</a>, ' +
+  '<a href="#">childhood</a>, <a href="#">clothing</a> '+
+  'or <a href="#">religion</a>');
+}
+
+$(async () => {
+  await refresh();
+  $('#speechResult')[0].reset = ready;
+  $('#speechResult')[0].reset();
+  $('#speakButton').click(() => {
+    if (recognizing) {
+      recognizing = false;
+      recognizer.stop();
+    } else {
+      start();
+    }
+  });
 });

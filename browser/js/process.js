@@ -1,4 +1,8 @@
-import responses from './responses';
+import interpret from './apiai.js';
+import { responses } from './responses';
+
+let currentCharacter;
+let lastWasIncomplete = false;
 
 const speeds = {
   isabella: 0.95,
@@ -56,10 +60,10 @@ async function readSentences(sentences, voice, speed) {
       }
     }
   }
-  $('#speechResult').text('');
+  $('#speechResult')[0].reset();
 }
 
-function solo(char) {
+export function solo(char) {
   for (const c of ['isabella', 'brian', 'sierida']) {
     if (char !== c) {
       $(`div.${c}`).fadeOut('slow', () => $('div.solo').show());
@@ -74,21 +78,46 @@ function clear() {
   }
 }
 
-export default async function processSpeech(apiai, voiceSetup, listenAgain) {
+export async function setCharacter(c) {
+  currentCharacter = c;
+  if (lastWasIncomplete) {
+    lastWasIncomplete = false;
+    const result = await interpret(currentCharacter);
+    processSpeech(result, voiceSetup, listenAgain);
+  }
+}
+
+export async function processSpeech(apiai, voiceSetup, listenAgain) {
   if (apiai.result.actionIncomplete) {
+    lastWasIncomplete = true;
     // Speak the question
-    $('#speechResult').text(apiai.result.fulfillment.speech);
-    await speak(apiai.result.fulfillment.speech);
-    listenAgain();
-  } else if (responses[apiai.result.action]) {
-    const char = apiai.result.parameters.character.toLowerCase();
-    const response = responses[apiai.result.action][char];
-    solo(char);
-    await readSentences(response, voiceSetup[char], speeds[char]);
-    clear();
-  } else if (apiai.result.fulfillment && apiai.result.fulfillment.speech) {
+    if (currentCharacter) {
+      const result = await interpret(currentCharacter);
+      processSpeech(result, voiceSetup, listenAgain);
+    } else {
+      $('#speechResult').text(apiai.result.fulfillment.speech);
+      await speak(apiai.result.fulfillment.speech);
+      listenAgain();
+    }
+    return;
+  }
+
+  lastWasIncomplete = false;
+  if (apiai.result.parameters && apiai.result.parameters.character) {
+    currentCharacter = apiai.result.parameters.character.toLowerCase();
+
+    if (responses[currentCharacter]) {
+      const response = responses[currentCharacter][apiai.result.action];
+      solo(currentCharacter);
+      await readSentences(response, voiceSetup[currentCharacter], speeds[currentCharacter]);
+      clear();
+      return;
+    }
+  }
+
+  if (apiai.result.fulfillment && apiai.result.fulfillment.speech) {
     await speak(apiai.result.fulfillment.speech);
   } else {
-    alert(apiai);
+    console.log('Unknown result type', apiai);
   }
 }
