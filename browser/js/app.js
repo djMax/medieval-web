@@ -73,6 +73,9 @@ const autoQuestion = {
   clothing: 'what type of clothes do you wear?',
   weapons: 'what weapons did they use?',
   torture: 'name some forms of torture.',
+  castles: 'what were castles like?',
+  medicine: 'were you healthy?',
+  leisure: 'do you play?',
 };
 
 $('#speechResult').on('click', 'a', async function clickQuestion(e) {
@@ -100,7 +103,8 @@ function ready() {
   $('#speechResult').html('ask about <a href="#">food</a>, ' +
   '<a href="#">marriage</a>, <a href="#">education</a>, ' +
   '<a href="#">childhood</a>, <a href="#">clothing</a> ' +
-  'or <a href="#">religion</a>');
+  '<a href="#">medicine</a>, <a href="#">castles</a> ' +
+  '<a href="#">leisure</a>, or <a href="#">religion</a>');
 }
 
 $(async () => {
